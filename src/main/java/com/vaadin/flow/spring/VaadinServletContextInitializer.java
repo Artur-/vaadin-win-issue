@@ -665,6 +665,7 @@ public class VaadinServletContextInitializer
 
         private Resource[] collectResources(String locationPattern)
                 throws IOException {
+                    getLogger().error("collectResources for "+locationPattern);
             List<Resource> resourcesList = new ArrayList<>();
             for (Resource resource : super.getResources(locationPattern)) {
                 getLogger().info("Testing resource: "+resource);
