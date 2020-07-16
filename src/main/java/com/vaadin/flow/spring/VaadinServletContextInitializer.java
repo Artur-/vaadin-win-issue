@@ -667,10 +667,13 @@ public class VaadinServletContextInitializer
                 throws IOException {
             List<Resource> resourcesList = new ArrayList<>();
             for (Resource resource : super.getResources(locationPattern)) {
+                getLogger().info("Testing resource: "+resource);
                 String path = resource.getURL().getPath();
                 if (path.endsWith(".jar!/")) {
+                    getLogger().info("Ok, ends with .jar/");
                     resourcesList.add(resource);
                 } else if (path.endsWith("/")) {
+                    getLogger().info("Ok, ends with /");
                     rootPaths.add(path);
                     resourcesList.add(resource);
                 } else {
@@ -678,6 +681,7 @@ public class VaadinServletContextInitializer
                     if (index >= 0) {
                         String relativePath = path.substring(index + 6);
                         if (shouldPathBeScanned(relativePath)) {
+                            getLogger().info("Ok, relative path should be scanned");
                             resourcesList.add(resource);
                         }
                     } else {
@@ -693,6 +697,7 @@ public class VaadinServletContextInitializer
                         if (parents.stream()
                                 .anyMatch(parent -> shouldPathBeScanned(
                                         path.substring(parent.length())))) {
+                            getLogger().info("Ok, any parent shouldPathBeScanned matches");
                             resourcesList.add(resource);
                         }
                     }
