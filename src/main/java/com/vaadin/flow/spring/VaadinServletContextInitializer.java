@@ -707,11 +707,16 @@ public class VaadinServletContextInitializer
         }
 
         private boolean shouldPathBeScanned(String path) {
+boolean scanned;
             if (defaultWhiteList.stream().anyMatch(path::startsWith)) {
-                return true;
+                scanned=true;
             }
+            else 
+            scanned =  !blackListed.stream().anyMatch(path::startsWith);
 
-            return !blackListed.stream().anyMatch(path::startsWith);
+            getLogger().info("shouldPathBeScannd("+path+"?: "+scanned);
+
+            return scanned;
         }
     }
 
