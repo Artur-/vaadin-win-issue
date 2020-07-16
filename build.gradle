@@ -24,9 +24,8 @@ buildscript {
 }
 
 plugins {
-    id 'com.vaadin' version '0.7.0'
+    id 'com.vaadin' version '0.8.0'
     id "io.gitlab.arturbosch.detekt" version "1.5.1"
-    id "com.palantir.git-version" version "0.12.2"
 }
 
 allprojects {
@@ -79,7 +78,7 @@ configurations {
 
 dependencyManagement {
     imports {
-        mavenBom("com.vaadin:vaadin-bom:14.2.1")
+        mavenBom("com.vaadin:vaadin-bom:14.3.0")
     }
 }
 
