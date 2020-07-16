@@ -1,0 +1,140 @@
+buildscript {
+    ext {
+        versions = [
+            kotlin    : "1.3.+",
+            springBoot: "2.2.6.RELEASE",
+            awsSdk    : "1.11.+"
+        ]
+    }
+
+    ext.allRepositories = {
+        jcenter()
+        mavenCentral()
+        mavenLocal()
+        maven { url "https://jitpack.io" }
+    }
+
+    repositories(allRepositories)
+
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${versions.springBoot}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:${versions.kotlin}"
+    }
+}
+
+plugins {
+    id 'com.vaadin' version '0.7.0'
+    id "io.gitlab.arturbosch.detekt" version "1.5.1"
+    id "com.palantir.git-version" version "0.12.2"
+}
+
+allprojects {
+    repositories(allRepositories)
+}
+
+configurations.all {
+    resolutionStrategy {
+
+        force "com.amazonaws:aws-java-sdk-core:${versions.awsSdk}"
+        force "com.amazonaws:aws-java-sdk-dynamodb:${versions.awsSdk}"
+        force "com.amazonaws:aws-java-sdk-s3:${versions.awsSdk}"
+        force "com.amazonaws:jmespath-java:${versions.awsSdk}"
+        force "com.google.code.findbugs:jsr305:3.0.2"
+        force "org.jetbrains:annotations:19.0.0"
+        force "com.google.guava:guava:28.2-jre"
+        force "org.apiguardian:apiguardian-api:1.1.0"
+        force "org.apache.httpcomponents:httpclient:4.5.9"
+
+        failOnVersionConflict()
+    }
+}
+
+apply plugin: "kotlin"
+apply plugin: "kotlin-spring"
+apply plugin: "idea"
+apply plugin: "org.springframework.boot"
+apply plugin: "io.spring.dependency-management"
+apply plugin: "kotlin-allopen"
+
+group = "de.bringmeister"
+sourceCompatibility = JavaVersion.VERSION_11
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xjsr305=strict"]
+        jvmTarget = "1.8"
+    }
+}
+
+configurations {
+    all*.exclude module: "commons-logging"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("com.vaadin:vaadin-bom:14.2.1")
+    }
+}
+
+
+dependencies {
+
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    // implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "com.vaadin:vaadin-spring-boot-starter"
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:${versions.kotlin}"
+
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.10.0"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+
+    implementation "org.zalando:tracer-spring-boot-starter:0.17.2"
+    implementation "org.zalando:logbook-spring-boot-starter:2.0.0"
+
+    //  implementation "io.springfox:springfox-swagger2:2.9.2"
+    // implementation "io.springfox:springfox-swagger-ui:2.9.2"
+
+    implementation "com.amazonaws:aws-java-sdk-dynamodb:${versions.awsSdk}"
+
+    //  implementation "com.github.bringmeister:aws-kinesis-spring-boot-starter:0.4.1"
+
+    runtimeOnly "net.logstash.logback:logstash-logback-encoder:6.3"
+    runtimeOnly "io.micrometer:micrometer-registry-statsd"
+}
+
+sourceSets {
+    main.java.srcDirs += "src/main/kotlin"
+}
+
+bootRun {
+    systemProperties = System.properties
+}
+
+jar {
+    archiveName "${project.name}.jar"
+}
+
+test {
+    useJUnitPlatform()
+
+    environment "TESTCONTAINERS_RYUK_DISABLED", "true"
+
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+vaadin {
+    productionMode = false
+    pnpmEnable = true
+}

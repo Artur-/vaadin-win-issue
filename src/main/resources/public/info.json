@@ -1,0 +1,6 @@
+{
+  "id": "${group}:${project.name}",
+  "environment": "${project.hasProperty('env') ? project.env : 'development'}",
+  "version": "${version}",
+  "buildTime": "${new Date()}"
+}
